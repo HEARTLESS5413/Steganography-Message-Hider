@@ -1,21 +1,3 @@
-<script type="text/javascript">
-    (function (l) {
-      if (l.search[1] === "/") {
-        var decoded = l.search
-          .slice(1)
-          .split("&")
-          .map(function (s) {
-            return s.replace(/~and~/g, "&");
-          })
-          .join("?");
-        window.history.replaceState(
-          null,
-          null,
-          l.pathname.slice(0, -1) + decoded + l.hash
-        );
-      }
-    })(window.location);
-  </script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,227 +6,91 @@
   <title>Secure Image Messenger</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-
-    :root {
-      --bg-color: linear-gradient(135deg, #0b0c10, #300000);
-      --text-color: #ffffff;
-      --button-bg: #660000;
-      --button-hover: #990000;
-      --highlight-color: #ff4d4d;
-    }
-
-    body.light {
-      --bg-color: linear-gradient(135deg, #ffffff, #dddddd);
-      --text-color: #000000;
-      --button-bg: #003366;
-      --button-hover: #0055aa;
-      --highlight-color: #003366;
-    }
-
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 20px;
-      background: var(--bg-color);
-      color: var(--text-color);
-      transition: background 0.4s, color 0.4s;
+      background: #121212;
+      color: white;
     }
 
-    h2 {
-      color: var(--highlight-color);
-      text-align: center;
-    }
+    h2 { text-align: center; color: #ff4d4d; }
 
     input, textarea, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
       font-size: 16px;
-      border: none;
       border-radius: 6px;
-      background: #1f1f2e;
-      color: #fff;
+      border: none;
       box-sizing: border-box;
     }
 
-    input::placeholder, textarea::placeholder {
-      color: #bbb;
-    }
-
     button {
-      background: var(--button-bg);
-      color: #fff;
+      background-color: #ff4d4d;
+      color: white;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
     button:hover {
-      background: var(--button-hover);
+      background-color: #cc0000;
     }
 
-    canvas {
-      display: none;
-    }
+    canvas { display: none; }
 
     #outputImage {
       display: none;
-      margin-top: 15px;
       max-width: 100%;
+      margin-top: 15px;
       border: 2px solid #444;
-      border-radius: 6px;
     }
 
     #downloadLink {
       display: none;
-      text-decoration: none;
-      background: #ff6b81;
-      color: white;
+      background: #ff4d4d;
       padding: 10px;
-      margin-top: 10px;
-      display: inline-block;
-      border-radius: 4px;
-    }
-
-    #downloadLink:hover {
-      background: #c44569;
-    }
-
-    .theme-toggle {
-      float: right;
-      margin-top: 10px;
-      margin-right: 10px;
-      background-color: var(--button-bg);
       color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 14px;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-      width: auto;
-    }
-
-    .theme-toggle:hover {
-      background-color: var(--button-hover);
-      box-shadow: 0 0 10px var(--highlight-color), 0 0 20px var(--highlight-color);
-    }
-
-    .fire {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle at center, orange 0%, red 60%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: fire-burst 0.6s ease-out forwards;
-    }
-
-    @keyframes fire-burst {
-      0% { transform: scale(0.5); opacity: 1; }
-      100% { transform: scale(2); opacity: 0; }
-    }
-
-    .password-wrapper {
-      margin-bottom: 4px;
-    }
-
-    .toggle-password {
-      width: 100px;
-      margin-top: 2px;
-      font-size: 12px;
-      border-radius: 6px;
-      background-color: var(--button-bg);
-      color: white;
-      border: none;
-      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
     }
 
     #decodedMessageBox {
-      background-color: #1f1f2e;
-      padding: 15px;
+      margin-top: 20px;
+      padding: 10px;
+      background: #222;
+      border: 1px solid #ff4d4d;
       border-radius: 6px;
-      margin-top: 12px;
-      min-height: 50px;
-      border: 1px solid var(--highlight-color);
-      color: var(--text-color);
+      min-height: 40px;
       white-space: pre-wrap;
-      font-size: 15px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top bar with theme button -->
-  <div style="width: 100%;">
-    <button class="theme-toggle" onclick="triggerFire(event, toggleTheme)">Theme</button>
-  </div>
-
   <h2>🔐 Hide Message in Image</h2>
-  <input type="file" id="imageInput" accept="image/*" />
-  <textarea id="messageInput" rows="4" placeholder="Enter your secret message here..."></textarea>
-
-  <div class="password-wrapper">
-    <input type="password" id="passwordInput" placeholder="Password (if you want)" />
-  </div>
-  <button type="button" class="toggle-password" onclick="togglePassword('passwordInput', this)">Show</button>
-
+  <input type="file" id="imageInput" accept="image/*">
+  <textarea id="messageInput" placeholder="Enter your secret message..."></textarea>
+  <input type="password" id="passwordInput" placeholder="Password (optional)">
   <button onclick="encodeMessage()">Encrypt & Hide</button>
   <canvas id="canvas"></canvas>
   <img id="outputImage" />
-  <a id="downloadLink" download="stego-image.png">Download Image</a>
+  <a id="downloadLink" download="hidden.png">Download Image</a>
 
-  <hr />
+  <hr>
 
   <h2>🕵️ Reveal Message from Image</h2>
-  <input type="file" id="decodeImageInput" accept="image/*" />
-
-  <div class="password-wrapper">
-    <input type="password" id="decodePasswordInput" placeholder="Password (if any)" />
-  </div>
-  <button type="button" class="toggle-password" onclick="togglePassword('decodePasswordInput', this)">Show</button>
-
+  <input type="file" id="decodeImageInput" accept="image/*">
+  <input type="password" id="decodePasswordInput" placeholder="Password (if any)">
   <button onclick="decodeMessage()">Reveal Message</button>
-
-  <!-- 👇 Added message box -->
   <div id="decodedMessageBox">🔓 Hidden message will appear here...</div>
 
   <script>
-    function toggleTheme() {
-      document.body.classList.toggle("light");
-    }
-
-    function triggerFire(e, callback) {
-      const target = e.currentTarget;
-      const fire = document.createElement('div');
-      fire.classList.add('fire');
-      const rect = target.getBoundingClientRect();
-      fire.style.left = (e.clientX - rect.left - 10) + 'px';
-      fire.style.top = (e.clientY - rect.top - 10) + 'px';
-      target.appendChild(fire);
-      setTimeout(() => {
-        fire.remove();
-        if (callback) callback();
-      }, 500);
-    }
-
-    function togglePassword(inputId, btn) {
-      const input = document.getElementById(inputId);
-      if (input.type === "password") {
-        input.type = "text";
-        btn.innerText = "Hide";
-      } else {
-        input.type = "password";
-        btn.innerText = "Show";
-      }
-    }
-
     function encodeMessage() {
       const file = document.getElementById('imageInput').files[0];
       const message = document.getElementById('messageInput').value;
       const password = document.getElementById('passwordInput').value;
 
-      if (!file || !message) return alert("Image and message are required!");
+      if (!file || !message) return alert("Please select an image and enter a message.");
 
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -261,16 +107,27 @@
             finalMsg = CryptoJS.AES.encrypt(message, password).toString();
           }
 
-          const binary = new TextEncoder().encode(finalMsg);
+          const msgBytes = new TextEncoder().encode(finalMsg);
+          const msgLength = msgBytes.length;
+
+          if (msgLength > 65535) return alert("Message too long!");
+
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          let data = imageData.data;
+          const data = imageData.data;
 
-          if (binary.length * 8 > data.length / 4) return alert("Message too large!");
+          const totalBitsNeeded = (msgLength + 2) * 8;  // 2 bytes for length
+          if (totalBitsNeeded > data.length / 4) {
+            return alert("Message is too large for this image.");
+          }
 
-          for (let i = 0; i < binary.length; i++) {
+          // Encode length (2 bytes = 16 bits)
+          const lengthBytes = [(msgLength >> 8) & 0xFF, msgLength & 0xFF];
+          const fullBytes = new Uint8Array([...lengthBytes, ...msgBytes]);
+
+          for (let i = 0; i < fullBytes.length; i++) {
             for (let bit = 0; bit < 8; bit++) {
-              const index = i * 8 + bit;
-              data[index * 4] = (data[index * 4] & 0xFE) | ((binary[i] >> (7 - bit)) & 1);
+              const dataIndex = i * 8 + bit;
+              data[dataIndex * 4] = (data[dataIndex * 4] & 0xFE) | ((fullBytes[i] >> (7 - bit)) & 1);
             }
           }
 
@@ -278,6 +135,7 @@
           const outputImage = document.getElementById('outputImage');
           outputImage.src = canvas.toDataURL();
           outputImage.style.display = "block";
+
           const downloadLink = document.getElementById('downloadLink');
           downloadLink.href = outputImage.src;
           downloadLink.style.display = "inline-block";
@@ -291,7 +149,7 @@
       const file = document.getElementById('decodeImageInput').files[0];
       const password = document.getElementById('decodePasswordInput').value;
 
-      if (!file) return alert("Upload an image to decode!");
+      if (!file) return alert("Please select an image.");
 
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -311,26 +169,35 @@
             bits.push(data[i * 4] & 1);
           }
 
+          // Decode length first (first 16 bits)
+          let length = 0;
+          for (let i = 0; i < 16; i++) {
+            length = (length << 1) | bits[i];
+          }
+
           const bytes = [];
-          for (let i = 0; i < bits.length; i += 8) {
-            const byte = bits.slice(i, i + 8).reduce((acc, bit, j) => acc | (bit << (7 - j)), 0);
-            if (byte === 0) break;
+          for (let i = 16; i < 16 + length * 8; i += 8) {
+            let byte = 0;
+            for (let j = 0; j < 8; j++) {
+              byte = (byte << 1) | bits[i + j];
+            }
             bytes.push(byte);
           }
 
-          const message = new TextDecoder().decode(new Uint8Array(bytes));
+          const msgBytes = new Uint8Array(bytes);
+          const message = new TextDecoder().decode(msgBytes);
 
           try {
             if (password) {
               const decrypted = CryptoJS.AES.decrypt(message, password);
               const result = decrypted.toString(CryptoJS.enc.Utf8);
-              if (!result) throw new Error("Incorrect password or not encrypted");
+              if (!result) throw new Error("Incorrect password or decryption failed.");
               document.getElementById('decodedMessageBox').innerText = "🔓 " + result;
             } else {
               document.getElementById('decodedMessageBox').innerText = "🔓 " + message;
             }
-          } catch (e) {
-            alert("Failed to decode message: " + e.message);
+          } catch (err) {
+            alert("Error: " + err.message);
           }
         };
         img.src = e.target.result;
@@ -339,9 +206,6 @@
     }
   </script>
 
-  <p style="text-align: center; margin-top: 40px; font-size: 14px; color: var(--highlight-color);">
-    By - Abhijeet
-  </p>
-
+  <p style="text-align:center; margin-top: 20px; color:#ff4d4d;">By - Abhijeet</p>
 </body>
 </html>

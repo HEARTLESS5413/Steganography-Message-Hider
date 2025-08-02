@@ -164,19 +164,19 @@
 </head>
 <body>
 
-  <!-- Theme Toggle -->
+  
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <p style="margin: 0; font-weight: bold;">Secure Messenger</p>
     <button class="theme-toggle" onclick="triggerFire(event, toggleTheme)">Theme</button>
   </div>
 
-  <!-- Section Switch Buttons -->
+  
   <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0;">
     <button class="theme-toggle" onclick="showImageSection()">🖼️ Hide Message in Image</button>
     <button class="theme-toggle" onclick="showSection('textSection')">📜 Hide Message in Text</button>
   </div>
 
-  <!-- Image Section -->
+  
   <div id="imageSection">
     <h2>🔐 Hide Message in Image</h2>
     <input type="file" id="imageInput" accept="image/*" />
@@ -205,7 +205,7 @@
     <div id="decodedMessageBox">🔓 Hidden message will appear here...</div>
   </div>
 
-  <!-- Text Encryption Section -->
+  
   <div id="textSection" style="display: none;">
     <h2>📜 Encrypt Message in Text</h2>
     <textarea id="textInput" rows="4" placeholder="Enter your secret message..."></textarea>
